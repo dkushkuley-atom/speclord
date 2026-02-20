@@ -1,0 +1,12 @@
+specVersion: "0.1.0"
+inherits: "INHERITS_PATH"
+
+service: "SERVICE_NAME"
+owner: "OWNER"
+
+conventions:
+  naming: "snake_case"
+
+testing:
+  framework: "pytest"
+  coverage_target: 85

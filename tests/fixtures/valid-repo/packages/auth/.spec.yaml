@@ -1,0 +1,13 @@
+specVersion: "0.1.0"
+inherits: "../../org.spec.yaml"
+
+service: "auth"
+owner: "@auth-team"
+
+conventions:
+  naming: "snake_case"
+  error_handling: "raise exceptions"
+
+testing:
+  framework: "pytest"
+  coverage_target: 90
