@@ -101,8 +101,12 @@ def get_dep_tree(graph: DepGraph, node: str) -> dict[str, object]:
             return {"(circular)": {}}
         visited.add(n)
         deps = graph.adjacency.get(n, [])
-        result = {dep: _build(dep) for dep in deps}
+        result: dict[str, object] = {}
+        for dep in deps:
+            result[dep] = _build(dep)
         visited.discard(n)
         return result
 
-    return {node: _build(node)}
+    tree: dict[str, object] = {}
+    tree[node] = _build(node)
+    return tree

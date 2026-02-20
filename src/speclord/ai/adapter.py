@@ -116,7 +116,8 @@ class ClaudeCodeAdapter:
         )
         raw = self._call(full_prompt, system, cwd)
         try:
-            return json.loads(raw)
+            result: dict[str, Any] = json.loads(raw)
+            return result
         except json.JSONDecodeError as e:
             raise AIError(
                 f"Model returned invalid JSON: {e}",

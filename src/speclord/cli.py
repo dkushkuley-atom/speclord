@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from speclord.config import SpeclordConfig
 
 console = Console()
+err_console = Console(stderr=True)
 
 
 def _resolve_root(cli_root: str | None) -> tuple[Path, SpeclordConfig]:
@@ -245,7 +246,7 @@ def context(file: str | None, root: str | None, batch: str | None) -> None:
     if batch is not None:
         specs = sorted(root_path.glob(batch))
         if not specs:
-            console.print(f"[yellow]No specs matched pattern: {batch}[/yellow]", stderr=True)
+            err_console.print(f"[yellow]No specs matched pattern: {batch}[/yellow]")
             return
 
         outputs: list[str] = []
@@ -253,18 +254,18 @@ def context(file: str | None, root: str | None, batch: str | None) -> None:
             try:
                 outputs.append(build_context(spec, root_path))
             except ResolutionError as e:
-                console.print(f"[red]Error resolving {spec}: {e}[/red]", stderr=True)
+                err_console.print(f"[red]Error resolving {spec}: {e}[/red]")
 
         click.echo("\n---\n\n".join(outputs), nl=False)
     else:
         spec_path = Path(file).resolve()  # type: ignore[arg-type]
         if not spec_path.exists():
-            console.print(f"[red]File not found: {file}[/red]", stderr=True)
+            err_console.print(f"[red]File not found: {file}[/red]")
             sys.exit(1)
         try:
             output = build_context(spec_path, root_path)
         except ResolutionError as e:
-            console.print(f"[red]Error: {e}[/red]", stderr=True)
+            err_console.print(f"[red]Error: {e}[/red]")
             sys.exit(1)
         click.echo(output, nl=False)
 
@@ -289,13 +290,13 @@ def resolve(file: str, root: str | None, fmt: str) -> None:
     spec_path = Path(file).resolve()
 
     if not spec_path.exists():
-        console.print(f"[red]File not found: {file}[/red]", stderr=True)
+        err_console.print(f"[red]File not found: {file}[/red]")
         sys.exit(1)
 
     try:
         chain = resolve_chain(spec_path, root_path)
     except ResolutionError as e:
-        console.print(f"[red]Error: {e}[/red]", stderr=True)
+        err_console.print(f"[red]Error: {e}[/red]")
         sys.exit(1)
 
     if fmt == "json":
@@ -480,7 +481,7 @@ def check(file: str | None, root: str | None, fmt: str) -> None:
     if file is not None:
         spec_path = Path(file).resolve()
         if not spec_path.exists():
-            console.print(f"[red]File not found: {file}[/red]", stderr=True)
+            err_console.print(f"[red]File not found: {file}[/red]")
             sys.exit(1)
         findings = check_spec(spec_path, root_path)
     else:
@@ -557,17 +558,18 @@ def drift(file: str | None, root: str | None, fail_on: str | None, fmt: str) -> 
     from speclord.ai.adapter import ClaudeCodeAdapter
     from speclord.ai.drift import analyze_all_drift, analyze_drift
     from speclord.errors import AIError
+    from speclord.types import DriftFinding
 
     root_path, _cfg = _resolve_root(root)
     adapter = ClaudeCodeAdapter()
 
     if file is not None:
-        spec_path = Path(file).resolve()
-        if not spec_path.exists():
+        target_path = Path(file).resolve()
+        if not target_path.exists():
             console.print(f"[red]File not found: {file}[/red]")
             sys.exit(1)
         try:
-            reports = [analyze_drift(spec_path, root_path, adapter)]
+            reports = [analyze_drift(target_path, root_path, adapter)]
         except AIError as e:
             console.print(f"[red]Error: {e}[/red]")
             sys.exit(1)
@@ -575,10 +577,10 @@ def drift(file: str | None, root: str | None, fail_on: str | None, fmt: str) -> 
         reports = analyze_all_drift(root_path, adapter)
 
     # Collect all findings across reports
-    all_findings = []
+    all_findings: list[tuple[str, DriftFinding]] = []
     for r in reports:
-        for f in r.findings:
-            all_findings.append((r.spec_path, f))
+        for finding in r.findings:
+            all_findings.append((r.spec_path, finding))
 
     if fmt == "json":
         data = [
@@ -616,15 +618,15 @@ def drift(file: str | None, root: str | None, fail_on: str | None, fmt: str) -> 
         table.add_column("Section")
         table.add_column("Description")
 
-        for spec_path, f in all_findings:
+        for finding_spec, finding in all_findings:
             sev_style = {"error": "red", "warning": "yellow", "info": "blue"}.get(
-                f.severity, "white"
+                finding.severity, "white"
             )
             table.add_row(
-                f"[{sev_style}]{f.severity}[/{sev_style}]",
-                spec_path,
-                f.spec_section,
-                f.description,
+                f"[{sev_style}]{finding.severity}[/{sev_style}]",
+                finding_spec,
+                finding.spec_section,
+                finding.description,
             )
 
         console.print(table)
@@ -637,8 +639,8 @@ def drift(file: str | None, root: str | None, fail_on: str | None, fmt: str) -> 
     if fail_on is not None:
         severity_levels = {"info": 0, "warning": 1, "error": 2}
         threshold = severity_levels[fail_on]
-        for _, f in all_findings:
-            if severity_levels.get(f.severity, 0) >= threshold:
+        for _, finding in all_findings:
+            if severity_levels.get(finding.severity, 0) >= threshold:
                 sys.exit(1)
 
 
@@ -796,16 +798,16 @@ def deps(file: str | None, root: str | None, fmt: str) -> None:
         # Single-file dependency tree
         spec_path = Path(file).resolve()
         if not spec_path.exists():
-            console.print(f"[red]File not found: {file}[/red]", stderr=True)
+            err_console.print(f"[red]File not found: {file}[/red]")
             sys.exit(1)
         try:
             node = spec_path.relative_to(root_path).as_posix()
         except ValueError:
-            console.print(f"[red]File is not under root: {file}[/red]", stderr=True)
+            err_console.print(f"[red]File is not under root: {file}[/red]")
             sys.exit(1)
 
         if node not in graph.adjacency:
-            console.print(f"[red]Not a recognized spec: {node}[/red]", stderr=True)
+            err_console.print(f"[red]Not a recognized spec: {node}[/red]")
             sys.exit(1)
 
         tree_data = get_dep_tree(graph, node)
@@ -1272,12 +1274,12 @@ def status(root: str | None) -> None:
     if not lint_findings:
         console.print("[bold]Lint:[/bold] [green]All specs valid[/green]")
     else:
-        parts = []
+        lint_parts: list[str] = []
         if lint_errors:
-            parts.append(f"[red]{lint_errors} error(s)[/red]")
+            lint_parts.append(f"[red]{lint_errors} error(s)[/red]")
         if lint_warnings:
-            parts.append(f"[yellow]{lint_warnings} warning(s)[/yellow]")
-        console.print(f"[bold]Lint:[/bold] {', '.join(parts)}")
+            lint_parts.append(f"[yellow]{lint_warnings} warning(s)[/yellow]")
+        console.print(f"[bold]Lint:[/bold] {', '.join(lint_parts)}")
 
     # --- Check summary ---
     check_findings = check_all(root_path)
@@ -1288,12 +1290,12 @@ def status(root: str | None) -> None:
     if not check_findings:
         console.print("[bold]Check:[/bold] [green]All specs pass[/green]")
     else:
-        parts = []
+        check_parts: list[str] = []
         if check_errors:
-            parts.append(f"[red]{check_errors} error(s)[/red]")
+            check_parts.append(f"[red]{check_errors} error(s)[/red]")
         if check_warnings:
-            parts.append(f"[yellow]{check_warnings} warning(s)[/yellow]")
-        console.print(f"[bold]Check:[/bold] {', '.join(parts)}")
+            check_parts.append(f"[yellow]{check_warnings} warning(s)[/yellow]")
+        console.print(f"[bold]Check:[/bold] {', '.join(check_parts)}")
 
 
 def _fmt_dict(d: dict[str, object]) -> str:

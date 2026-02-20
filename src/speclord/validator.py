@@ -156,14 +156,14 @@ def lint_all(root: Path) -> list[LintFinding]:
     for path in spec_paths:
         try:
             if path.name == "org.spec.yaml":
-                spec = parse_org_spec(path)
-                findings.extend(validate_org_spec(spec))
+                org = parse_org_spec(path)
+                findings.extend(validate_org_spec(org))
             elif path.suffix == ".yaml":
-                spec = parse_service_spec(path)
-                findings.extend(validate_service_spec(spec))
+                svc = parse_service_spec(path)
+                findings.extend(validate_service_spec(svc))
             elif path.suffix == ".md":
-                spec = parse_file_spec(path)
-                findings.extend(validate_file_spec(spec))
+                fs = parse_file_spec(path)
+                findings.extend(validate_file_spec(fs))
         except ParseError as e:
             findings.append(LintFinding(
                 file_path=str(path),

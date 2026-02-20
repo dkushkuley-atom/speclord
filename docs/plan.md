@@ -194,9 +194,9 @@ Claude Code SDK integration for intelligent analysis and spec generation. All te
 - [x] **Step 21: AI adapter**
   - **Creates:** `src/speclord/ai/__init__.py`, `src/speclord/ai/adapter.py`
   - `LLMAdapter` Protocol: `analyze(prompt, system, cwd, schema) -> dict`, `generate(prompt, system, cwd) -> str`
-  - `ClaudeCodeAdapter` — wraps Claude Code SDK, configurable model/turns/budget
+  - `ClaudeCodeAdapter` — calls Claude CLI via subprocess (`--print` mode), configurable model/turns
   - `MockAdapter` — returns canned responses for testing
-  - Config: reads `ANTHROPIC_API_KEY` from env, model from config file
+  - Auth delegated to Claude CLI (no API key handling in speclord)
   - **Tests:** mock adapter returns expected shapes
 
 - [x] **Step 22: AI prompts**

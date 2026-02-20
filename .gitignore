@@ -15,3 +15,5 @@ htmlcov/
 registry.lock.json
 .python-version
 .claude/
+.env
+.env.*
