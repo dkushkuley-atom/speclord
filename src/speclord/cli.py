@@ -1163,11 +1163,11 @@ def migrate_draft(root: str | None, directory: str | None, fmt: str) -> None:
         if result.success:
             succeeded += 1
             if fmt == "text":
-                console.print(f"  [green]✓[/green] {result.spec_path}")
+                console.print(f"  [green]+[/green] {result.spec_path}")
         else:
             failed += 1
             if fmt == "text":
-                console.print(f"  [red]✗[/red] {result.source_path}: {result.error}")
+                console.print(f"  [red]x[/red] {result.source_path}: {result.error}")
 
     if fmt == "json":
         data = {

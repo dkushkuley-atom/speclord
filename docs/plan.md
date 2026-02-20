@@ -43,7 +43,7 @@ All AI commands use the **Claude Code SDK** (agentic mode). The agent gets files
 
 ---
 
-## Phase 1: Foundation ✅
+## Phase 1: Foundation (DONE)
 
 Steps 1–6. Complete. 106 tests, 92% coverage, 399 lines of source.
 
@@ -301,41 +301,41 @@ Post-ship. Add once specs are the norm and you need to prevent regression.
 
 | Phase | Steps | Status |
 |-------|-------|--------|
-| 1: Foundation | 1–6 | ✅ 6/6 |
-| 2: Context & Emit | 7–15 | 🔨 2/9 |
-| 3: Migration (non-AI) | 16–20 | ⬜ 0/5 |
-| 4: AI Engine | 21–26 | ⬜ 0/6 |
-| 5: Ship It | 27–29 | ⬜ 0/3 |
-| 6: CI & Enforcement | 30–33 | ⬜ 0/4 |
-| **Total** | **1–33** | **8/33** |
+| 1: Foundation | 1–6 | DONE 6/6 |
+| 2: Context & Emit | 7–15 | DONE 9/9 |
+| 3: Migration (non-AI) | 16–20 | DONE 5/5 |
+| 4: AI Engine | 21–26 | DONE 6/6 |
+| 5: Ship It | 27–29 | DONE 3/3 |
+| 6: CI & Enforcement | 30–33 | TODO 0/4 |
+| **Total** | **1–33** | **29/33** |
 
 ## Command Reference
 
 | Command | Phase | Status |
 |---------|-------|--------|
-| `speclord init` | 1 | ✅ |
-| `speclord new <type> <path>` | 1 | ✅ |
-| `speclord lint` | 1 | ✅ |
-| `speclord compile` | 1 | ✅ |
-| `speclord context <file>` | 2 | ⬜ |
-| `speclord resolve <file>` | 2 | ⬜ |
-| `speclord emit <target>` | 2 | ⬜ |
-| `speclord coverage` | 2 | ⬜ |
-| `speclord check [file]` | 2 | ⬜ |
-| `speclord status` | 2 | ⬜ |
-| `speclord deps [file]` | 3 | ⬜ |
-| `speclord search <query>` | 3 | ⬜ |
-| `speclord migrate scan` | 3 | ⬜ |
-| `speclord migrate plan` | 3 | ⬜ |
-| `speclord migrate progress` | 3 | ⬜ |
-| `speclord drift [file]` | 4 | ⬜ |
-| `speclord review <file>` | 4 | ⬜ |
-| `speclord draft <desc> <path>` | 4 | ⬜ |
-| `speclord migrate draft` | 4 | ⬜ |
-| `speclord ci` | 6 | ⬜ |
-| `speclord watch` | 6 | ⬜ |
-| `speclord hooks install` | 6 | ⬜ |
-| `speclord diff` | 6 | ⬜ |
+| `speclord init` | 1 | DONE |
+| `speclord new <type> <path>` | 1 | DONE |
+| `speclord lint` | 1 | DONE |
+| `speclord compile` | 1 | DONE |
+| `speclord context <file>` | 2 | DONE |
+| `speclord resolve <file>` | 2 | DONE |
+| `speclord emit <target>` | 2 | DONE |
+| `speclord coverage` | 2 | DONE |
+| `speclord check [file]` | 2 | DONE |
+| `speclord status` | 2 | DONE |
+| `speclord deps [file]` | 3 | DONE |
+| `speclord search <query>` | 3 | DONE |
+| `speclord migrate scan` | 3 | DONE |
+| `speclord migrate plan` | 3 | DONE |
+| `speclord migrate progress` | 3 | DONE |
+| `speclord drift [file]` | 4 | DONE |
+| `speclord review <file>` | 4 | DONE |
+| `speclord draft <desc> <path>` | 4 | DONE |
+| `speclord migrate draft` | 4 | DONE |
+| `speclord ci` | 6 | TODO |
+| `speclord watch` | 6 | TODO |
+| `speclord hooks install` | 6 | TODO |
+| `speclord diff` | 6 | TODO |
 
 ## Verification
 

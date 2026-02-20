@@ -1223,9 +1223,9 @@ speclord migrate draft [--root DIR] [--batch DIR] [--format text|json]
 
 **Text output (streaming):**
 ```
-  ✓ src/auth/routes.spec.md
-  ✓ src/utils/helpers.spec.md
-  ✗ src/config/secrets.py: AI error: ...
+  + src/auth/routes.spec.md
+  + src/utils/helpers.spec.md
+  x src/config/secrets.py: AI error: ...
 
 Done: 2 drafted, 1 failed
 ```
